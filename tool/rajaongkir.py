@@ -15,7 +15,7 @@ class Gateway(BaseHTTPRequestHandler):
         origin = self.headers.get("Origin", "")
         if not re.fullmatch(r"http://(localhost|127\.0\.0\.1):[0-9]+", origin):
             return self.send_error(403)
-        locations = r"/destination/(province|(city|district)/[0-9]+)"
+        locations = r"/destination/(province|(city|district|sub-district)/[0-9]+)"
         if self.command == "GET" and re.fullmatch(locations, self.path):
             data = None
         elif self.command == "POST" and self.path == "/calculate/district/domestic-cost":
