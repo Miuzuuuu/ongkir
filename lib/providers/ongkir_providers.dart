@@ -23,7 +23,7 @@ class OngkirProvider with ChangeNotifier {
   Province? _selectedDestProvince;
   City? _selectedDestCity;
   Courier? _selectedCourier;
-  int _weight = 1000;
+  double? _weightKg = 1;
 
   List<City> originDistricts = [], destDistricts = [];
   City? originDistrict, destDistrict;
@@ -70,7 +70,6 @@ class OngkirProvider with ChangeNotifier {
   Province? get selectedDestProvince => _selectedDestProvince;
   City? get selectedDestCity => _selectedDestCity;
   Courier? get selectedCourier => _selectedCourier;
-  int get weight => _weight;
 
   ShippingCost? get selectedCost => _selectedCost;
 
@@ -158,7 +157,10 @@ class OngkirProvider with ChangeNotifier {
   // CHECK SHIPPING COST
   // ================================
   Future<String?> checkShippingCost() async {
-    if (_weight < 1) return "Berat paket minimal 1 gram.";
+    final kg = _weightKg;
+    if (kg == null || kg < 0.001 || !(kg * 1000).isFinite) {
+      return "Masukkan berat dalam kg, minimal 0,001 kg dan maksimal tiga angka desimal.";
+    }
     if (originDistrict == null ||
         destDistrict == null ||
         _selectedCourier == null) {
@@ -175,7 +177,7 @@ class OngkirProvider with ChangeNotifier {
       final options = await _service.checkCost(
         origin: originDistrict!.id, // id district asal
         destination: destDistrict!.id, // id district tujuan
-        weight: _weight,
+        weightGrams: (kg * 1000).round(),
         courier: _selectedCourier!.code,
       );
 
@@ -271,10 +273,12 @@ class OngkirProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setWeight(int weight) {
-    // jaga-jaga kalau user isi 0 atau negatif
+  void setWeightKg(String input) {
     _invalidateCosts();
-    _weight = weight;
+    final value = input.trim().replaceAll(',', '.');
+    _weightKg = RegExp(r'^\d+(?:\.\d{1,3})?$').hasMatch(value)
+        ? double.tryParse(value)
+        : null;
     notifyListeners();
   }
 
@@ -299,7 +303,7 @@ class OngkirProvider with ChangeNotifier {
     _selectedCourier = null;
     _selectedCost = null;
 
-    _weight = 1000;
+    _weightKg = 1;
     _originCities = [];
     _destinationCities = [];
     _costs = [];

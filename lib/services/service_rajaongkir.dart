@@ -71,7 +71,7 @@ class RajaOngkirService {
   Future<List<ShippingCost>> checkCost({
     required String origin,
     required String destination,
-    required int weight,
+    required int weightGrams,
     required String courier,
   }) async {
     try {
@@ -84,7 +84,7 @@ class RajaOngkirService {
         body: {
           'origin': origin,
           'destination': destination,
-          'weight': weight.toString(),
+          'weight': weightGrams.toString(),
           // di docs bisa kirim banyak kurir pakai ":".
           // kirim satu kurir yang dipilih user.
           'courier': courier,

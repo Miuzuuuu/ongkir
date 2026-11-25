@@ -16,7 +16,7 @@ class CekOngkirScreen extends StatefulWidget {
 
 class _CekOngkirScreenState extends State<CekOngkirScreen> {
   final TextEditingController _weightController = TextEditingController(
-    text: '1000',
+    text: '1',
   );
 
   @override
@@ -73,7 +73,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
               icon: Icon(Icons.refresh),
               onPressed: () {
                 context.read<OngkirProvider>().reset();
-                _weightController.text = '1000';
+                _weightController.text = '1';
               },
               tooltip: 'Reset',
             ),
@@ -380,15 +380,14 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
         TextField(
           controller: _weightController,
           decoration: InputDecoration(
-            labelText: 'Berat Paket (gram)',
+            labelText: 'Berat Paket (kg)',
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.scale_outlined),
-            helperText: 'Minimal 1 gram',
+            helperText: 'Contoh: 1 atau 1,5 kg',
           ),
-          keyboardType: TextInputType.number,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
           onChanged: (value) {
-            final weight = int.tryParse(value) ?? 0;
-            provider.setWeight(weight);
+            provider.setWeightKg(value);
           },
         ),
         SizedBox(height: 16),
