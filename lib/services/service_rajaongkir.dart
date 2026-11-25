@@ -1,20 +1,23 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import '../models/province.dart';
 import '../models/city.dart';
 import '../models/cost.dart';
 
 class RajaOngkirService {
-  static const String _apiKey = 'API_KEY';
-  static const String _baseUrl =
-      'https://rajaongkir.komerce.id/api/v1/destination';
+  static const String _apiKey = String.fromEnvironment('RAJAONGKIR_API_KEY');
+  static const _root =
+      kIsWeb ? 'http://127.0.0.1:8766' : 'https://rajaongkir.komerce.id/api/v1';
+  static const _baseUrl = '$_root/destination';
+  Map<String, String> get _headers => kIsWeb ? {} : {'key': _apiKey};
 
   // Get all provinces
   Future<List<Province>> getProvinces() async {
     try {
       final response = await http.get(
         Uri.parse('$_baseUrl/province'),
-        headers: {'key': _apiKey},
+        headers: _headers,
       );
 
       if (response.statusCode == 200) {
@@ -34,11 +37,17 @@ class RajaOngkirService {
   }
 
   // Get cities by province
-  Future<List<City>> getCities(String provinceId) async {
+  Future<List<City>> getCities(String provinceId) =>
+      _locations('city/$provinceId');
+
+  Future<List<City>> getDistricts(String cityId) =>
+      _locations('district/$cityId');
+
+  Future<List<City>> _locations(String path) async {
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/city/$provinceId'),
-        headers: {'key': _apiKey},
+        Uri.parse('$_baseUrl/$path'),
+        headers: _headers,
       );
 
       if (response.statusCode == 200) {
@@ -57,8 +66,7 @@ class RajaOngkirService {
   }
 
   // Check shipping cost
-  static const String _costUrl =
-      'https://rajaongkir.komerce.id/api/v1/calculate/district/domestic-cost';
+  static const String _costUrl = '$_root/calculate/district/domestic-cost';
 
   Future<List<ShippingCost>> checkCost({
     required String origin,
@@ -70,7 +78,7 @@ class RajaOngkirService {
       final response = await http.post(
         Uri.parse(_costUrl),
         headers: {
-          'key': _apiKey,
+          ..._headers,
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: {
@@ -84,9 +92,6 @@ class RajaOngkirService {
           'price': 'lowest', // atau 'lowest' sesuai kebutuhanmu
         },
       );
-
-      print('Status code (cost): ${response.statusCode}');
-      print('Body (cost): ${response.body}');
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body) as Map<String, dynamic>;

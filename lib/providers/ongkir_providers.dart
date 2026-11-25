@@ -25,6 +25,27 @@ class OngkirProvider with ChangeNotifier {
   Courier? _selectedCourier;
   int _weight = 1000;
 
+  List<City> originDistricts = [], destDistricts = [];
+  City? originDistrict, destDistrict;
+  String? locationError;
+  int _revision = 0;
+
+  void _invalidateCosts() {
+    _revision++;
+    _costs = [];
+    _selectedCost = null;
+  }
+
+  void selectDistrict(City? value, bool origin) {
+    if (origin) {
+      originDistrict = value;
+    } else {
+      destDistrict = value;
+    }
+    _invalidateCosts();
+    notifyListeners();
+  }
+
   // Paket pengiriman terpilih
   ShippingCost? _selectedCost;
 
@@ -76,13 +97,14 @@ class OngkirProvider with ChangeNotifier {
   // FETCH PROVINCES
   // ================================
   Future<void> fetchProvinces() async {
+    locationError = null;
     _isLoadingProvinces = true;
     notifyListeners();
 
     try {
       _provinces = await _service.getProvinces();
     } catch (e) {
-      print('Error fetching provinces: $e');
+      locationError = 'Gagal memuat provinsi. $e';
       _provinces = [];
     } finally {
       _isLoadingProvinces = false;
@@ -98,12 +120,15 @@ class OngkirProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _originCities = await _service.getCities(provinceId);
+      final items = await _service.getCities(provinceId);
+      if (_selectedOriginProvince?.provinceId == provinceId)
+        _originCities = items;
     } catch (e) {
-      print('Error fetching origin cities: $e');
-      _originCities = [];
+      if (_selectedOriginProvince?.provinceId == provinceId)
+        locationError = 'Gagal memuat kota. $e';
     } finally {
-      _isLoadingOriginCities = false;
+      if (_selectedOriginProvince?.provinceId == provinceId)
+        _isLoadingOriginCities = false;
       notifyListeners();
     }
   }
@@ -116,12 +141,15 @@ class OngkirProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _destinationCities = await _service.getCities(provinceId);
+      final items = await _service.getCities(provinceId);
+      if (_selectedDestProvince?.provinceId == provinceId)
+        _destinationCities = items;
     } catch (e) {
-      print('Error fetching destination cities: $e');
-      _destinationCities = [];
+      if (_selectedDestProvince?.provinceId == provinceId)
+        locationError = 'Gagal memuat kota. $e';
     } finally {
-      _isLoadingDestCities = false;
+      if (_selectedDestProvince?.provinceId == provinceId)
+        _isLoadingDestCities = false;
       notifyListeners();
     }
   }
@@ -130,10 +158,11 @@ class OngkirProvider with ChangeNotifier {
   // CHECK SHIPPING COST
   // ================================
   Future<String?> checkShippingCost() async {
-    if (_selectedOriginCity == null ||
-        _selectedDestCity == null ||
+    if (_weight < 1) return "Berat paket minimal 1 gram.";
+    if (originDistrict == null ||
+        destDistrict == null ||
         _selectedCourier == null) {
-      return 'Mohon lengkapi provinsi, kota asal, kota tujuan, dan kurir.';
+      return 'Mohon lengkapi provinsi, kota asal, kota tujuan, kecamatan asal dan tujuan, serta kurir.';
     }
 
     _isLoadingCosts = true;
@@ -142,13 +171,17 @@ class OngkirProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _costs = await _service.checkCost(
-        origin: _selectedOriginCity!.id, // id district asal
-        destination: _selectedDestCity!.id, // id district tujuan
+      final revision = _revision;
+      final options = await _service.checkCost(
+        origin: originDistrict!.id, // id district asal
+        destination: destDistrict!.id, // id district tujuan
         weight: _weight,
         courier: _selectedCourier!.code,
       );
 
+      if (revision != _revision) return null;
+      _costs = options;
+      if (options.isEmpty) return 'Tidak ada layanan untuk rute dan kurir ini.';
       if (_costs.isNotEmpty) {
         _selectedCost = _costs.first;
       }
@@ -167,6 +200,10 @@ class OngkirProvider with ChangeNotifier {
   // SETTERS / UPDATERS
   // ================================
   void setOriginProvince(Province? province) {
+    originDistricts = [];
+    originDistrict = null;
+    locationError = null;
+    _invalidateCosts();
     _selectedOriginProvince = province;
     _selectedOriginCity = null;
     _originCities = [];
@@ -177,12 +214,29 @@ class OngkirProvider with ChangeNotifier {
     }
   }
 
-  void setOriginCity(City? city) {
+  Future<void> setOriginCity(City? city) async {
+    originDistricts = [];
+    originDistrict = null;
+    locationError = null;
+    _invalidateCosts();
     _selectedOriginCity = city;
+    notifyListeners();
+    if (city == null) return;
+    try {
+      final items = await _service.getDistricts(city.id);
+      if (_selectedOriginCity == city) originDistricts = items;
+    } catch (e) {
+      if (_selectedOriginCity == city)
+        locationError = 'Gagal memuat kecamatan. $e';
+    }
     notifyListeners();
   }
 
   void setDestProvince(Province? province) {
+    destDistricts = [];
+    destDistrict = null;
+    locationError = null;
+    _invalidateCosts();
     _selectedDestProvince = province;
     _selectedDestCity = null;
     _destinationCities = [];
@@ -193,19 +247,34 @@ class OngkirProvider with ChangeNotifier {
     }
   }
 
-  void setDestCity(City? city) {
+  Future<void> setDestCity(City? city) async {
+    destDistricts = [];
+    destDistrict = null;
+    locationError = null;
+    _invalidateCosts();
     _selectedDestCity = city;
+    notifyListeners();
+    if (city == null) return;
+    try {
+      final items = await _service.getDistricts(city.id);
+      if (_selectedDestCity == city) destDistricts = items;
+    } catch (e) {
+      if (_selectedDestCity == city)
+        locationError = 'Gagal memuat kecamatan. $e';
+    }
     notifyListeners();
   }
 
   void setCourier(Courier? courier) {
+    _invalidateCosts();
     _selectedCourier = courier;
     notifyListeners();
   }
 
   void setWeight(int weight) {
     // jaga-jaga kalau user isi 0 atau negatif
-    _weight = weight <= 0 ? 1 : weight;
+    _invalidateCosts();
+    _weight = weight;
     notifyListeners();
   }
 
@@ -218,6 +287,11 @@ class OngkirProvider with ChangeNotifier {
   // RESET SEMUA FORM
   // ================================
   void reset() {
+    _invalidateCosts();
+    originDistricts = [];
+    destDistricts = [];
+    originDistrict = destDistrict = null;
+    locationError = null;
     _selectedOriginProvince = null;
     _selectedOriginCity = null;
     _selectedDestProvince = null;

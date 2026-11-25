@@ -89,6 +89,8 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (provider.locationError != null)
+                        Text(provider.locationError!),
                       LayoutBuilder(
                         builder: (context, constraints) {
                           final origin = _buildOriginSection(provider);
@@ -251,6 +253,18 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           filterFn: (item, filter) =>
               item.fullName.toLowerCase().contains(filter.toLowerCase()),
         ),
+        const SizedBox(height: 12),
+        DropdownSearch<City>(
+          items: provider.originDistricts,
+          selectedItem: provider.originDistrict,
+          enabled: provider.originDistricts.isNotEmpty,
+          onChanged: (item) => provider.selectDistrict(item, true),
+          popupProps: const PopupProps.menu(showSearchBox: true),
+          dropdownDecoratorProps: const DropDownDecoratorProps(
+            dropdownSearchDecoration: InputDecoration(
+                labelText: 'Kecamatan Asal', border: OutlineInputBorder()),
+          ),
+        ),
       ],
     );
   }
@@ -344,6 +358,18 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           filterFn: (item, filter) =>
               item.fullName.toLowerCase().contains(filter.toLowerCase()),
         ),
+        const SizedBox(height: 12),
+        DropdownSearch<City>(
+          items: provider.destDistricts,
+          selectedItem: provider.destDistrict,
+          enabled: provider.destDistricts.isNotEmpty,
+          onChanged: (item) => provider.selectDistrict(item, false),
+          popupProps: const PopupProps.menu(showSearchBox: true),
+          dropdownDecoratorProps: const DropDownDecoratorProps(
+            dropdownSearchDecoration: InputDecoration(
+                labelText: 'Kecamatan Tujuan', border: OutlineInputBorder()),
+          ),
+        ),
       ],
     );
   }
@@ -361,7 +387,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           ),
           keyboardType: TextInputType.number,
           onChanged: (value) {
-            final weight = int.tryParse(value) ?? 1000;
+            final weight = int.tryParse(value) ?? 0;
             provider.setWeight(weight);
           },
         ),
