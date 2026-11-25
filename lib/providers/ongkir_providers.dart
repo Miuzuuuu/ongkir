@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../models/province.dart';
 import '../models/city.dart';
 import '../models/cost.dart';
@@ -120,14 +120,17 @@ class OngkirProvider with ChangeNotifier {
 
     try {
       final items = await _service.getCities(provinceId);
-      if (_selectedOriginProvince?.provinceId == provinceId)
+      if (_selectedOriginProvince?.provinceId == provinceId) {
         _originCities = items;
+      }
     } catch (e) {
-      if (_selectedOriginProvince?.provinceId == provinceId)
+      if (_selectedOriginProvince?.provinceId == provinceId) {
         locationError = 'Gagal memuat kota. $e';
+      }
     } finally {
-      if (_selectedOriginProvince?.provinceId == provinceId)
+      if (_selectedOriginProvince?.provinceId == provinceId) {
         _isLoadingOriginCities = false;
+      }
       notifyListeners();
     }
   }
@@ -141,14 +144,17 @@ class OngkirProvider with ChangeNotifier {
 
     try {
       final items = await _service.getCities(provinceId);
-      if (_selectedDestProvince?.provinceId == provinceId)
+      if (_selectedDestProvince?.provinceId == provinceId) {
         _destinationCities = items;
+      }
     } catch (e) {
-      if (_selectedDestProvince?.provinceId == provinceId)
+      if (_selectedDestProvince?.provinceId == provinceId) {
         locationError = 'Gagal memuat kota. $e';
+      }
     } finally {
-      if (_selectedDestProvince?.provinceId == provinceId)
+      if (_selectedDestProvince?.provinceId == provinceId) {
         _isLoadingDestCities = false;
+      }
       notifyListeners();
     }
   }
@@ -190,7 +196,6 @@ class OngkirProvider with ChangeNotifier {
 
       return null; // sukses, tidak ada error
     } catch (e) {
-      print('Error checkShippingCost: $e');
       return 'Error: $e';
     } finally {
       _isLoadingCosts = false;
@@ -228,8 +233,9 @@ class OngkirProvider with ChangeNotifier {
       final items = await _service.getDistricts(city.id);
       if (_selectedOriginCity == city) originDistricts = items;
     } catch (e) {
-      if (_selectedOriginCity == city)
+      if (_selectedOriginCity == city) {
         locationError = 'Gagal memuat kecamatan. $e';
+      }
     }
     notifyListeners();
   }
@@ -261,8 +267,9 @@ class OngkirProvider with ChangeNotifier {
       final items = await _service.getDistricts(city.id);
       if (_selectedDestCity == city) destDistricts = items;
     } catch (e) {
-      if (_selectedDestCity == city)
+      if (_selectedDestCity == city) {
         locationError = 'Gagal memuat kecamatan. $e';
+      }
     }
     notifyListeners();
   }

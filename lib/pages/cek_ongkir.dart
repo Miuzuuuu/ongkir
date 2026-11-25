@@ -1,3 +1,5 @@
+// dropdown_search 5 uses Flutter SDK Material types and theme.
+// ignore: deprecated_member_use
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -70,7 +72,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           elevation: 0,
           actions: [
             IconButton(
-              icon: Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh),
               onPressed: () {
                 context.read<OngkirProvider>().reset();
                 _weightController.text = '1';
@@ -82,7 +84,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
         body: Consumer<OngkirProvider>(
           builder: (context, provider, child) {
             return SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 820),
@@ -173,12 +175,12 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           Icons.my_location_rounded,
           const Color(0xff09695d),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         DropdownSearch<Province>(
           items: provider.provinces,
           selectedItem: provider.selectedOriginProvince,
           onChanged: provider.setOriginProvince,
-          dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownDecoratorProps: const DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Provinsi Asal',
               border: OutlineInputBorder(),
@@ -187,14 +189,14 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           ),
           popupProps: PopupProps.modalBottomSheet(
             showSearchBox: true,
-            searchFieldProps: TextFieldProps(
+            searchFieldProps: const TextFieldProps(
               decoration: InputDecoration(
                 hintText: 'Cari provinsi...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
             ),
-            modalBottomSheetProps: ModalBottomSheetProps(
+            modalBottomSheetProps: const ModalBottomSheetProps(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
@@ -206,13 +208,13 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           filterFn: (item, filter) =>
               item.province.toLowerCase().contains(filter.toLowerCase()),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         DropdownSearch<City>(
           items: provider.originCities,
           selectedItem: provider.selectedOriginCity,
           enabled: provider.originCities.isNotEmpty,
           onChanged: provider.setOriginCity,
-          dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownDecoratorProps: const DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Kota Asal',
               border: OutlineInputBorder(),
@@ -221,14 +223,14 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           ),
           popupProps: PopupProps.modalBottomSheet(
             showSearchBox: true,
-            searchFieldProps: TextFieldProps(
+            searchFieldProps: const TextFieldProps(
               decoration: InputDecoration(
                 hintText: 'Cari kota...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
             ),
-            modalBottomSheetProps: ModalBottomSheetProps(
+            modalBottomSheetProps: const ModalBottomSheetProps(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
@@ -240,7 +242,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                 selected: isSelected,
               );
             },
-            emptyBuilder: (context, searchEntry) => Center(
+            emptyBuilder: (context, searchEntry) => const Center(
               child: Padding(
                 padding: EdgeInsets.all(20),
                 child: Text(
@@ -278,12 +280,12 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           Icons.outlined_flag_rounded,
           const Color(0xff97491d),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         DropdownSearch<Province>(
           items: provider.provinces,
           selectedItem: provider.selectedDestProvince,
           onChanged: provider.setDestProvince,
-          dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownDecoratorProps: const DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Provinsi Tujuan',
               border: OutlineInputBorder(),
@@ -292,14 +294,14 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           ),
           popupProps: PopupProps.modalBottomSheet(
             showSearchBox: true,
-            searchFieldProps: TextFieldProps(
+            searchFieldProps: const TextFieldProps(
               decoration: InputDecoration(
                 hintText: 'Cari provinsi...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
             ),
-            modalBottomSheetProps: ModalBottomSheetProps(
+            modalBottomSheetProps: const ModalBottomSheetProps(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
@@ -311,13 +313,13 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           filterFn: (item, filter) =>
               item.province.toLowerCase().contains(filter.toLowerCase()),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         DropdownSearch<City>(
           items: provider.destinationCities,
           selectedItem: provider.selectedDestCity,
           enabled: provider.destinationCities.isNotEmpty,
           onChanged: provider.setDestCity,
-          dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownDecoratorProps: const DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Kota Tujuan',
               border: OutlineInputBorder(),
@@ -326,14 +328,14 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           ),
           popupProps: PopupProps.modalBottomSheet(
             showSearchBox: true,
-            searchFieldProps: TextFieldProps(
+            searchFieldProps: const TextFieldProps(
               decoration: InputDecoration(
                 hintText: 'Cari kota...',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
               ),
             ),
-            modalBottomSheetProps: ModalBottomSheetProps(
+            modalBottomSheetProps: const ModalBottomSheetProps(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
@@ -345,7 +347,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                 selected: isSelected,
               );
             },
-            emptyBuilder: (context, searchEntry) => Center(
+            emptyBuilder: (context, searchEntry) => const Center(
               child: Padding(
                 padding: EdgeInsets.all(20),
                 child: Text(
@@ -379,7 +381,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
       children: [
         TextField(
           controller: _weightController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Berat Paket (kg)',
             border: OutlineInputBorder(),
             prefixIcon: Icon(Icons.scale_outlined),
@@ -390,12 +392,12 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             provider.setWeightKg(value);
           },
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         DropdownSearch<Courier>(
           items: provider.couriers,
           selectedItem: provider.selectedCourier,
           onChanged: provider.setCourier,
-          dropdownDecoratorProps: DropDownDecoratorProps(
+          dropdownDecoratorProps: const DropDownDecoratorProps(
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Pilih Kurir',
               border: OutlineInputBorder(),
@@ -406,11 +408,11 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             showSearchBox: false,
             itemBuilder: (context, item, isSelected) {
               return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: const Color(0xffdcf1e7),
+                leading: const CircleAvatar(
+                  backgroundColor: Color(0xffdcf1e7),
                   child: Icon(
                     Icons.local_shipping,
-                    color: const Color(0xff09695d),
+                    color: Color(0xff09695d),
                   ),
                 ),
                 title: Text(item.name),
@@ -439,7 +441,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                 }
               },
         icon: provider.isLoadingCosts
-            ? SizedBox(
+            ? const SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
@@ -447,10 +449,10 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                   strokeWidth: 2,
                 ),
               )
-            : Icon(Icons.search),
+            : const Icon(Icons.search),
         label: Text(
           provider.isLoadingCosts ? 'Mengecek...' : 'Cek Ongkir',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xff09695d),
@@ -463,20 +465,20 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
   }
 
   Widget _buildResults(OngkirProvider provider) {
-    if (provider.costs.isEmpty) return SizedBox.shrink();
+    if (provider.costs.isEmpty) return const SizedBox.shrink();
 
     return Card(
       elevation: 0,
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                Icon(Icons.receipt_long, color: const Color(0xff09695d)),
+                Icon(Icons.receipt_long, color: Color(0xff09695d)),
                 SizedBox(width: 8),
                 Text(
                   'Pilih Paket Pengiriman',
@@ -484,19 +486,19 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               'Kurir: ${provider.selectedCourier?.name}',
               style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // 🔽 Dropdown paket (kurir + service)
             DropdownSearch<ShippingCost>(
               items: provider.costs,
               selectedItem: provider.selectedCost,
               onChanged: provider.setSelectedCost,
-              dropdownDecoratorProps: DropDownDecoratorProps(
+              dropdownDecoratorProps: const DropDownDecoratorProps(
                 dropdownSearchDecoration: InputDecoration(
                   labelText: 'Pilih Paket',
                   border: OutlineInputBorder(),
@@ -505,14 +507,14 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
               ),
               popupProps: PopupProps.modalBottomSheet(
                 showSearchBox: true,
-                searchFieldProps: TextFieldProps(
+                searchFieldProps: const TextFieldProps(
                   decoration: InputDecoration(
                     hintText: 'Cari paket (service/kurir)...',
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
                   ),
                 ),
-                modalBottomSheetProps: ModalBottomSheetProps(
+                modalBottomSheetProps: const ModalBottomSheetProps(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(20),
@@ -533,17 +535,17 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                   item.label.toLowerCase().contains(filter.toLowerCase()),
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (provider.selectedCost != null) ...[
-              Divider(height: 24),
-              Text(
+              const Divider(height: 24),
+              const Text(
                 'Detail Paket Terpilih',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: const Color(0xffe9f5ef),
                   borderRadius: BorderRadius.circular(8),
@@ -554,31 +556,31 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                   children: [
                     Text(
                       '${provider.selectedCost!.courierName} - ${provider.selectedCost!.service}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       provider.selectedCost!.description,
                       style: TextStyle(fontSize: 12, color: Colors.grey[700]),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Biaya: ${provider.selectedCost!.formattedPrice}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xff09695d),
+                        color: Color(0xff09695d),
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       'Estimasi: ${provider.selectedCost!.etd.isEmpty ? '-' : provider.selectedCost!.etd}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 12,
-                        color: const Color(0xff314e48),
+                        color: Color(0xff314e48),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
