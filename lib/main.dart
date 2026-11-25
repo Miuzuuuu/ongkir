@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: CekOngkirScreen(),
-        debugShowCheckedModeBanner: true,
+        debugShowCheckedModeBanner: false,
       ),
     );
   }

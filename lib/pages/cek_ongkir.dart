@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+
 import '../providers/ongkir_providers.dart';
 import '../models/province.dart';
 import '../models/city.dart';
 import '../models/cost.dart';
 
 class CekOngkirScreen extends StatefulWidget {
+  const CekOngkirScreen({super.key});
+
   @override
-  _CekOngkirScreenState createState() => _CekOngkirScreenState();
+  State<CekOngkirScreen> createState() => _CekOngkirScreenState();
 }
 
 class _CekOngkirScreenState extends State<CekOngkirScreen> {
@@ -32,46 +35,130 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Cek Ongkos Kirim'),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              context.read<OngkirProvider>().reset();
-              _weightController.text = '1000';
-            },
-            tooltip: 'Reset',
+    const ink = Color(0xff183c3a);
+    const accent = Color(0xff09695d);
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: ColorScheme.fromSeed(seedColor: accent, primary: accent),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xffa5bab6)),
           ),
-        ],
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: accent, width: 2),
+          ),
+        ),
       ),
-      body: Consumer<OngkirProvider>(
-        builder: (context, provider, child) {
-          return SingleChildScrollView(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildOriginSection(provider),
-                SizedBox(height: 24),
-                Divider(),
-                SizedBox(height: 24),
-                _buildDestinationSection(provider),
-                SizedBox(height: 24),
-                Divider(),
-                SizedBox(height: 24),
-                _buildWeightAndCourier(provider),
-                SizedBox(height: 24),
-                _buildCheckButton(provider),
-                SizedBox(height: 24),
-                _buildResults(provider),
-              ],
+      child: Scaffold(
+        backgroundColor: const Color(0xfff4f7f5),
+        appBar: AppBar(
+          backgroundColor: ink,
+          foregroundColor: Colors.white,
+          centerTitle: false,
+          leading: const Icon(
+            Icons.local_shipping_outlined,
+            color: Color(0xffa9edcd),
+          ),
+          title: const Text(
+            'Cek Ongkos Kirim',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                context.read<OngkirProvider>().reset();
+                _weightController.text = '1000';
+              },
+              tooltip: 'Reset',
             ),
-          );
-        },
+          ],
+        ),
+        body: Consumer<OngkirProvider>(
+          builder: (context, provider, child) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 820),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final origin = _buildOriginSection(provider);
+                          final destination = _buildDestinationSection(
+                            provider,
+                          );
+                          if (constraints.maxWidth >= 660) {
+                            return Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(child: origin),
+                                const SizedBox(width: 24),
+                                Expanded(child: destination),
+                              ],
+                            );
+                          }
+                          return Column(
+                            children: [
+                              origin,
+                              const SizedBox(height: 24),
+                              destination,
+                            ],
+                          );
+                        },
+                      ),
+                      const Divider(height: 36),
+                      _heading('Detail paket', Icons.inventory_2_outlined, ink),
+                      const SizedBox(height: 12),
+                      _buildWeightAndCourier(provider),
+                      const SizedBox(height: 20),
+                      _buildCheckButton(provider),
+                      if (provider.costs.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        _buildResults(provider),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
+    );
+  }
+
+  Widget _heading(String title, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: Color.alphaBlend(color.withAlpha(24), Colors.white),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: color, size: 21),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.w700,
+              color: Color(0xff183c3a),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -79,15 +166,10 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(Icons.location_on, color: Colors.blue),
-            SizedBox(width: 8),
-            Text(
-              'Dari',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
+        _heading(
+          'Asal pengiriman',
+          Icons.my_location_rounded,
+          const Color(0xff09695d),
         ),
         SizedBox(height: 12),
         DropdownSearch<Province>(
@@ -98,7 +180,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Provinsi Asal',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.map),
+              prefixIcon: Icon(Icons.map_outlined),
             ),
           ),
           popupProps: PopupProps.modalBottomSheet(
@@ -132,7 +214,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Kota Asal',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.location_city),
+              prefixIcon: Icon(Icons.location_city_outlined),
             ),
           ),
           popupProps: PopupProps.modalBottomSheet(
@@ -177,15 +259,10 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(Icons.place, color: Colors.green),
-            SizedBox(width: 8),
-            Text(
-              'Ke',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
+        _heading(
+          'Tujuan pengiriman',
+          Icons.outlined_flag_rounded,
+          const Color(0xff97491d),
         ),
         SizedBox(height: 12),
         DropdownSearch<Province>(
@@ -196,7 +273,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Provinsi Tujuan',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.map),
+              prefixIcon: Icon(Icons.map_outlined),
             ),
           ),
           popupProps: PopupProps.modalBottomSheet(
@@ -230,7 +307,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Kota Tujuan',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.location_city),
+              prefixIcon: Icon(Icons.location_city_outlined),
             ),
           ),
           popupProps: PopupProps.modalBottomSheet(
@@ -279,7 +356,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           decoration: InputDecoration(
             labelText: 'Berat Paket (gram)',
             border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.scale),
+            prefixIcon: Icon(Icons.scale_outlined),
             helperText: 'Minimal 1 gram',
           ),
           keyboardType: TextInputType.number,
@@ -297,7 +374,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             dropdownSearchDecoration: InputDecoration(
               labelText: 'Pilih Kurir',
               border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.local_shipping),
+              prefixIcon: Icon(Icons.local_shipping_outlined),
             ),
           ),
           popupProps: PopupProps.menu(
@@ -305,8 +382,11 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             itemBuilder: (context, item, isSelected) {
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: Colors.blue[100],
-                  child: Icon(Icons.local_shipping, color: Colors.blue),
+                  backgroundColor: const Color(0xffdcf1e7),
+                  child: Icon(
+                    Icons.local_shipping,
+                    color: const Color(0xff09695d),
+                  ),
                 ),
                 title: Text(item.name),
                 selected: isSelected,
@@ -327,7 +407,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
             ? null
             : () async {
                 final error = await provider.checkShippingCost();
-                if (error != null) {
+                if (mounted && error != null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(error), backgroundColor: Colors.red),
                   );
@@ -348,6 +428,9 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xff09695d),
+          foregroundColor: Colors.white,
+          elevation: 0,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
@@ -358,7 +441,8 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
     if (provider.costs.isEmpty) return SizedBox.shrink();
 
     return Card(
-      elevation: 4,
+      elevation: 0,
+      color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -367,7 +451,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.receipt_long, color: Colors.blue),
+                Icon(Icons.receipt_long, color: const Color(0xff09695d)),
                 SizedBox(width: 8),
                 Text(
                   'Pilih Paket Pengiriman',
@@ -391,7 +475,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                 dropdownSearchDecoration: InputDecoration(
                   labelText: 'Pilih Paket',
                   border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.local_shipping),
+                  prefixIcon: Icon(Icons.local_shipping_outlined),
                 ),
               ),
               popupProps: PopupProps.modalBottomSheet(
@@ -436,9 +520,9 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                 width: double.infinity,
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
+                  color: const Color(0xffe9f5ef),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue[200]!),
+                  border: Border.all(color: const Color(0xffbad9cb)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,9 +543,9 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                     Text(
                       'Biaya: ${provider.selectedCost!.formattedPrice}',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
+                        color: const Color(0xff09695d),
                       ),
                     ),
                     SizedBox(height: 4),
@@ -469,7 +553,7 @@ class _CekOngkirScreenState extends State<CekOngkirScreen> {
                       'Estimasi: ${provider.selectedCost!.etd.isEmpty ? '-' : provider.selectedCost!.etd}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.blue[800],
+                        color: const Color(0xff314e48),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
